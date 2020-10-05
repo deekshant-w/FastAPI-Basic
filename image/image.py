@@ -42,6 +42,7 @@ async def crop(*,
 			raise HTTPException(status_code=422, detail="Start (x,y) should be less than end (x,y) respectively.")
 		else:
 			newImage = npImage[starty:endy,startx:endx]
+			newImage = npImage
 			bytesImage = returnImage(newImage)
 	else:
 		raise HTTPException(status_code=400, detail="No Image")

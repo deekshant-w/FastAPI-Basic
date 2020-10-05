@@ -10,6 +10,14 @@ import time
 
 app = APIRouter()
 
+def pprint(*data):
+	data = [str(x) for x in data]
+	data = "-*-".join(data)
+	handle = open('log','a')
+	handle.write(data)
+	handle.write('\n')
+	handle.close()
+
 @app.post('/crop')
 async def crop(*,
 		image 	: 	UploadFile = File(...), 
@@ -20,13 +28,13 @@ async def crop(*,
 		):
 	start = time.time()
 	content = await image.read()
-	
-	print('await',time.time()-start)
+
+	pprint('await',time.time()-start)
 	start = time.time()
 	
 	npImage = readImage(content)
 	
-	print('decode',time.time()-start)
+	pprint('decode',time.time()-start)
 	start = time.time()
 	
 	if(np.shape):
@@ -38,7 +46,7 @@ async def crop(*,
 	else:
 		raise HTTPException(status_code=400, detail="No Image")
 
-	print('crop',time.time()-start)
+	pprint('crop',time.time()-start)
 	start = time.time()
 
 	headers = {
@@ -48,7 +56,7 @@ async def crop(*,
 
 	responce = StreamingResponse(io.BytesIO(bytesImage), media_type="image/png", headers=headers)
 	
-	print('resp',time.time()-start)
+	pprint('resp',time.time()-start)
 	start = time.time()
 	
 	return responce

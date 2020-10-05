@@ -5,7 +5,7 @@ from crud import main as crud
 
 app = FastAPI()
 
-# image router
+# Image router
 app.include_router(
     image.app,
     prefix="/image",

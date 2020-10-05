@@ -6,6 +6,7 @@ import io
 from scipy import ndimage
 from typing_extensions import Literal
 from .helper import *
+import time
 
 app = APIRouter()
 
@@ -17,8 +18,17 @@ async def crop(*,
 		endx	:	int,	
 		endy	:	int,	
 		):
+	start = time.time()
 	content = await image.read()
+	
+	print('await',time.time()-start)
+	start = time.time()
+	
 	npImage = readImage(content)
+	
+	print('decode',time.time()-start)
+	start = time.time()
+	
 	if(np.shape):
 		if(startx>=endx or starty>=endy):
 			raise HTTPException(status_code=422, detail="Start (x,y) should be less than end (x,y) respectively.")
@@ -28,12 +38,19 @@ async def crop(*,
 	else:
 		raise HTTPException(status_code=400, detail="No Image")
 
+	print('crop',time.time()-start)
+	start = time.time()
+
 	headers = {
 		'fileName'	: f"{image.filename.split('.')[0]}.png",
 		'fileLength': str(len(bytesImage))
 	}
 
 	responce = StreamingResponse(io.BytesIO(bytesImage), media_type="image/png", headers=headers)
+	
+	print('resp',time.time()-start)
+	start = time.time()
+	
 	return responce
 
 @app.post('/rotate')

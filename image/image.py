@@ -7,16 +7,9 @@ from scipy import ndimage
 from typing_extensions import Literal
 from .helper import *
 import time
+import json
 
 app = APIRouter()
-
-def pprint(*data):
-	data = [str(x) for x in data]
-	data = "-*-".join(data)
-	handle = open('log','a')
-	handle.write(data)
-	handle.write('\n')
-	handle.close()
 
 @app.post('/crop')
 async def crop(*,
@@ -26,15 +19,16 @@ async def crop(*,
 		endx	:	int,	
 		endy	:	int,	
 		):
+	logg = []
 	start = time.time()
 	content = await image.read()
-
-	pprint('await',time.time()-start)
+	
+	logg.append(('await',time.time()-start))
 	start = time.time()
 	
 	npImage = readImage(content)
 	
-	pprint('decode',time.time()-start)
+	logg.append(('decode',time.time()-start))
 	start = time.time()
 	
 	if(np.shape):
@@ -42,24 +36,20 @@ async def crop(*,
 			raise HTTPException(status_code=422, detail="Start (x,y) should be less than end (x,y) respectively.")
 		else:
 			newImage = npImage[starty:endy,startx:endx]
-			newImage = npImage
 			bytesImage = returnImage(newImage)
 	else:
 		raise HTTPException(status_code=400, detail="No Image")
 
-	pprint('crop',time.time()-start)
+	logg.append(('crop',time.time()-start))
 	start = time.time()
 
 	headers = {
 		'fileName'	: f"{image.filename.split('.')[0]}.png",
-		'fileLength': str(len(bytesImage))
+		'fileLength': str(len(bytesImage)),
+		'logg':json.dumps(logg)
 	}
 
 	responce = StreamingResponse(io.BytesIO(bytesImage), media_type="image/png", headers=headers)
-	
-	pprint('resp',time.time()-start)
-	start = time.time()
-	
 	return responce
 
 @app.post('/rotate')

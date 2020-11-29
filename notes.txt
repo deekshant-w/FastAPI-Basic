@@ -1,0 +1,36 @@
+- Enums for specific text
+- Sockets
+- True(bool) -> true,True,on,On,yes,1,oFF
+- @app.get(/main/{val:path}) now val string accepts /
+- default values (val1:int = 0, strVal:str = 'asad')
+- from typing import Optional -> Optional[str] for default value : mentions in docs
+- from pydantic import BaseModel -> inherit in class then val:int
+- use Query(fastapi) -> for validation -> q: Optional[str] = Query(None, min_length=3) Query(...,max_length=4)
+- for multiple entries with same name -> Optional[List[str]] = Query(None)
+- Query -> description, alias, val limits, depreciated, regex, lt, gt, 
+- Path -> for path parameters -> similar to query :  ge, le
+- Body -> similar
+- Field -> validation inside pydantic model
+- Pydantic special validaion -> HttpUrl
+- add example in query,field etc or pydantic class -> subclass Congig -> schema_extra={exapmple:{}}
+- special types decimal, bytes, datetime.., UUID
+- Cookie from fastapi ->  like path,query,body
+- Header from fastapi ->  like path,query,body, cookie
+- Output schema -> @app.post("/user/", --> response_model=UserIn <--, status_code=201) [UserIn is pydantic model] [auto validation and data removal]
+- Pydantic model inheritance works. define type in first model, defalult val in inherited one
+- Form -> like query,path for password etc
+- bytes = File(...) for small files in memory
+- UploadFile = File(...) for big on disk memory
+- raise HTTPException(status_code=404, detail="Item not found")
+- change the default category -> @app.get("/items/", tags=["items"])
+- Documentation Summry : @app.post("/a/",summary="Create an item",description="Create an item with all the information, name, description, price, tax and a set of unique tags") or docstring
+- from fastapi.encoders import jsonable_encoder
+- item.dict(exclude_unset=True) for pydantic models to drop unset keys
+- Depend - replace query with a function, class(__init__ and functions) [commons: CommonQueryParams = Depends()]
+- ↪ sub dependencies inside dependencies using Depend in parameters, use_cache for caching dependencies
+- ↪ dependencyfunction try: yield something finally: close etc after yielding (like context manager 'with')
+- @app.get("/items/", dependencies=[Depends(verify_token), Depends(verify_key)]) for header checking, raise, no return
+- middleware -> request, call_next -> process the request before calling call_next with request process its responce then return that responce
+- approuter for adding prefix paths
+- static files -> from fastapi.staticfiles import StaticFiles -> mount a directory to a path and all items in it
+- 
